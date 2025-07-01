@@ -11,6 +11,14 @@ def create_app():
     table    = os.getenv("DYNAMODB_TABLE")
     code_key = os.getenv("CODE_NAME")
 
+    missing = [name for name,val in [
+    ("AWS_REGION", region),
+    ("DYNAMODB_TABLE", table),
+    ("CODE_NAME", code_key)
+    ] if not val]
+    if missing:
+        raise RuntimeError(f"Missing required env vars: {', '.join(missing)}")
+
     # DynamoDB setup
     dynamodb = boto3.resource("dynamodb", region_name=region)
     table = dynamodb.Table(table)
